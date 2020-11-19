@@ -1,0 +1,4 @@
+*.log
+__pycache__/
+environments/masterenv/
+environments/workerenv/
