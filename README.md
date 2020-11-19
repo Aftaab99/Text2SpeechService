@@ -1,10 +1,13 @@
 ## Text to Speech Service
-A text-to-speech and speech-to-text service implementation. Designed based on the microservices design pattern
+A text-to-speech service implementation with predictive,dynamic load balancing
+
+**- Under development -**
 
 ### Setup/Requirements
 1. Activating the environment
 
     For the worker nodes
+
         python3 -m venv workerenv
         source environments/workerenv/bin/activate
         pip install -r worker_requirements.txt
