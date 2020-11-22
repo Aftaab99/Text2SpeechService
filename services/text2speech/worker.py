@@ -1,9 +1,9 @@
-from flask import Flask
+from flask import Flask, request
 import requests
 
 app = Flask(__name__)
 
-@app.route('/texttospeech', methods=['POST'])
+@app.route('/getspeech', methods=['POST'])
 def text2speech():
-    data=requests.json['line']
-    return data
+    return 'Response from '+str(request.host)
+    
