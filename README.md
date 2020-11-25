@@ -1,5 +1,5 @@
 ## Text to Speech Service
-A text-to-speech service implementation with predictive,dynamic load balancing
+A text-to-speech service implementation with predictive, dynamic load balancing
 
 **- Under development -**
 
@@ -29,6 +29,10 @@ To start the master node server, run
 
     gunicorn --bind 0.0.0.0:5000 master:app
 
+Then run `./setup_workers.sh -n 4` to start the worker processes. Once your done, you can kill all the worker processes created using the `kill_cur_workers.sh` script(or `pkill gunicorn`)
+
+### Text2Speech implementation
+This repo makes use of [FastSpeech](https://github.com/xcmyz/FastSpeech) for speech synthesis. Clone my [fork](https://github.com/Aftaab99/FastSpeech) into `services/text2speech/FastSpeech`. Its mostly the same except I removed the GPU code and WaveGlow as audio quality was satisfactory and WaveGlow was slow on CPU.
 
 ### Testing
 To test a request make a POST request to `localhost:5000/getspeech` with POST data as a JSON object looking like this
@@ -36,4 +40,4 @@ To test a request make a POST request to `localhost:5000/getspeech` with POST da
     {
         "text_message" : "This is text to be converted to speech"
     }
-The request should get proxied to one of the worker servers and you can which in the response
+The request should get proxied to one of the worker servers and you can which in the response. A sentence of length 7-10 takes roughly 10 seconds to synthesize on CPU.

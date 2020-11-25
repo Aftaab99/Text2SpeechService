@@ -31,9 +31,9 @@ while getopts ":hn:" opt; do
       # Clears the file
       echo -n "" > $log_file 
       while [[ port -lt endport ]] ; do
-        gunicorn --bind 0.0.0.0:$port worker:app &
+        gunicorn --bind 0.0.0.0:$port --timeout 360 worker:app &
         echo $! >> $log_file
-        if  [$? -eq 1 ]; then
+        if  [ $? -eq 1 ]; then
           echo "Something already running on port $port. Skipping.."; 
         else
           echo "Started process at port $port"

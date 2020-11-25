@@ -2,3 +2,4 @@
 __pycache__/
 environments/masterenv/
 environments/workerenv/
+services/text2speech/FastSpeech/
