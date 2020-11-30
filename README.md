@@ -40,4 +40,4 @@ To test a request make a POST request to `localhost:5000/getspeech` with POST da
     {
         "text_message" : "This is text to be converted to speech"
     }
-The request should get proxied to one of the worker servers and you can which in the response. A sentence of length 7-10 takes roughly 10 seconds to synthesize on CPU.
+The request should get proxied to one of the worker servers and you can view which in the response headers. A sentence of length 7-10 words takes roughly 10 seconds to synthesize on CPU.
