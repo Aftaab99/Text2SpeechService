@@ -23,7 +23,7 @@ A text-to-speech service implementation with predictive, dynamic load balancing
 
 To start the master node server, run
 
-    gunicorn --bind 0.0.0.0:5000 master:app
+    gunicorn --bind 0.0.0.0:5000 --timeout 360  master:app
 
 Then run `./setup_workers.sh -n 4` to start the worker processes. Once your done, you can kill all the worker processes created using the `kill_cur_workers.sh` script(or `pkill gunicorn`)
 

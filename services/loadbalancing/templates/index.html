@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Text2Speech</title>
+        <link rel='stylesheet' href="{{ url_for('static', filename='css/index.css') }}">
+    </head>
+    <body>
+        <h3 id='heading' class="center">Text2Speech using Predictive load balancing</h3>
+        <textarea placeholder="Enter your text to be converted" id="textmsg" class="center"></textarea>
+        <p id="error-field" class="center"></p>
+        <button class="center" id="submitbtn">Synthesize Speech</button>
+        <div id="loading-bar" class="center">
+            <label for="file">Synthezing speech... </label>
+            <div class="loader center"></div>
+        </div>
+        <audio controls id="result-audio" class="center">
+            <source id="source" src="" type="audio/wav">
+                Your browser does not support the audio element.
+        </audio>
+        <script src="{{ url_for('static', filename='js/index.js')}}"></script>
+    </body>
+</html>

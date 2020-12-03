@@ -1,4 +1,4 @@
-from flask import Flask, request, Response, make_response
+from flask import Flask, request, Response, make_response, render_template
 import random
 import requests
 import asyncio
@@ -8,7 +8,7 @@ from io import BytesIO
 from scipy.io import wavfile
 import numpy as np
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 PORTS = [17000, 17001, 17002, 17003]
 DOMAINS = {17000: 'localhost', 
            17001: 'localhost',
@@ -22,10 +22,11 @@ server_load = {k:{} for k in PORTS}
 
 @app.route('/', methods=['GET'])
 def index():
-    return "Hello world"
+    return render_template('index.html')
 
 @app.route('/getspeech', methods=['POST'])
 def getspeech():
+    print('request made')
     global server_load
     request_id = time.time()
     text = request.get_json()['text_message']
@@ -51,6 +52,10 @@ def getspeech():
     result_wav = loop.run_until_complete(get_final_response(lines, ids))
     response = make_response(result_wav.getvalue())
     result_wav.close()
+
+    for si in server_load:
+        if request_id in server_load[si]:
+            del server_load[si][request_id]
     response.headers['Content-Type'] = 'audio/wav'
     response.headers['Worker-Process'] = request.host
     response.headers['Content-Disposition'] = 'attachment; filename=speech.wav'
