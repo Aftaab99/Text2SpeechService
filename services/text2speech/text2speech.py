@@ -49,7 +49,3 @@ def get_audio_from_text(text, model, buffer):
     inv_mel_spec(mel, buffer)
     return buffer
 
-
-
-
-

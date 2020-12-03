@@ -18,8 +18,8 @@ model = load_model()
 
 @app.route('/getspeech', methods=['POST'])
 def text2speech():
-    text = request.json['text_message']
-    server_id = int(request.headers['server_id'])
+    text = request.get_json()['text_message']
+    server_id = int(request.get_json()['server_id'])
     n_words = len(text.split(' '))
     buffer = BytesIO()
     t1 = time.time()

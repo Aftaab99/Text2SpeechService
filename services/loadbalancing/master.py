@@ -1,8 +1,12 @@
-from flask import Flask, request, Response
+from flask import Flask, request, Response, make_response
 import random
 import requests
-import multiprocessing
+import asyncio
+import time
 from utils import get_config
+from io import BytesIO
+from scipy.io import wavfile
+import numpy as np
 
 app = Flask(__name__)
 PORTS = [17000, 17001, 17002, 17003]
@@ -10,6 +14,11 @@ DOMAINS = {17000: 'localhost',
            17001: 'localhost',
            17002: 'localhost',
            17003: 'localhost'}
+config = get_config()
+
+#A dictionary of dictionaries, mapping:
+#  server_id->request_timestamp->total load on that server due to that request
+server_load = {k:{} for k in PORTS}
 
 @app.route('/', methods=['GET'])
 def index():
@@ -17,47 +26,74 @@ def index():
 
 @app.route('/getspeech', methods=['POST'])
 def getspeech():
+    global server_load
+    request_id = time.time()
     text = request.get_json()['text_message']
-    # Proxy requests to one of the worker nodes. 
-    # Right now its random but later we can replace this with our algorithm
-    rp = random.choice(PORTS)
-    url = 'http://{}:{}/getspeech'.format(DOMAINS[rp], str(rp))
-    
-    return _proxy_request(request, url, rp)
-    
-def _proxy_request(req, redirect_url, server_id):
-    """
-    Reverse-Proxy's a request from the load balancer to one of the worker WSGI servers
-    Source: https://stackoverflow.com/a/36601467/8944317
-    """
-    headers = {key: value for (key, value) in request.headers if key != 'Host'}
-    headers['server_id'] = str(server_id)
-    response = requests.request(
-        method=req.method,
-        url=redirect_url,
-        headers=headers,
-        data=req.get_data(),
-        cookies=req.cookies,
-        allow_redirects=True)
-    excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
-    headers = [(name, value) for (name, value) in response.raw.headers.items()
-               if name.lower() not in excluded_headers]
-    response = Response(response.content, response.status_code, headers)
+    lines = text.split('.')
+    lines = [l for l in lines if l]
+    print(lines)
+    ids = []
+    for l in lines:
+        minload_server = PORTS[0]
+        min_load = sum(v for k,v in server_load[PORTS[0]].items())
+        for si in PORTS:
+            cur_load = sum(v for k,v in server_load[si].items())
+            if cur_load<min_load:
+                min_load = cur_load
+                minload_server = si
+        ids.append(minload_server)
+        pt = predict_time_taken(minload_server, l)
+        if server_load[si].get(request_id):
+            server_load[si][request_id]+=pt
+        else:
+            server_load[si][request_id]=pt
+    loop = asyncio.get_event_loop()
+    result_wav = loop.run_until_complete(get_final_response(lines, ids))
+    response = make_response(result_wav.getvalue())
+    result_wav.close()
+    response.headers['Content-Type'] = 'audio/wav'
+    response.headers['Worker-Process'] = request.host
+    response.headers['Content-Disposition'] = 'attachment; filename=speech.wav'
     return response
 
-def predict_time_taken(server_id, sentence, config):
+async def get_final_response(lines, ids):
+    """
+    Asynchronously sends each lines[i] to the specific server given by id[i].
+    """
+    responses = await asyncio.gather(*[
+        _proxy_request("http://localhost:{}/getspeech".format(id_), id_, l) for id_,l in zip(ids, lines)])
+    responses = [BytesIO(r.content) for r in responses]
+
+    result_buffer = BytesIO()
+    all_data = None
+    for audio_buffer in responses:
+        sr, data = np.array(wavfile.read(audio_buffer, 22050))
+        if all_data is None:
+            all_data = data
+        else:
+            all_data = np.concatenate([all_data, data])
+    wavfile.write(result_buffer,sr, all_data)
+    return result_buffer
+
+async def _proxy_request(redirect_url, server_id, line):
+    response = requests.post(
+        url=redirect_url,
+        json={'text_message': line, 'server_id': server_id})
+    return response
+
+def predict_time_taken(server_id, sentence):
     """
         Predicts the time taken for a server in the pool to respond to the request.
         Uses linear regression with features like the length of the sentence, num_words, 
         GPU availability, number of CPU cores and RAM.   
     """
+    global config
     num_words = len(sentence.split(r'[,. ]'))
     sentence_len = len(sentence)
-    cpu = config['server_id']['cpu']
-    ram = config['server_id']['ram']
-    hasgpu = int(config['server_id']['gpu_available'])
+    cpu = float(config[server_id]['n_cpu'])
+    ram = float(config[server_id]['ram'])
+    hasgpu = int(config[server_id]['gpu_available'])
 
-    # TODO: Replace with actual linear regression coefficients computed
-    pt = num_words + sentence_len + cpu + ram - 2 * hasgpu 
-    return pt
-
+    return (0 * cpu) + (0 * ram) + (0 * hasgpu) \
+           + (-5.3502524e-01 * num_words) + (4.7990492e-01 * sentence_len) \
+           + (-3.0397911071777344)

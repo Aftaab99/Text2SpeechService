@@ -2,7 +2,7 @@ CREATE TABLE Configuration (
     server_id NUMERIC(5) PRIMARY KEY,
     n_cpu NUMERIC(2),
     ram NUMERIC(2),
-    gpu_available BOOLEAN
+    gpuavailable BOOLEAN
 );
 
 CREATE TABLE PredictionLog (

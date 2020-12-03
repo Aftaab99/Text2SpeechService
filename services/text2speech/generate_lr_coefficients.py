@@ -4,6 +4,7 @@ import datetime
 import os.path as path
 import sys
 import numpy as np
+from sklearn.linear_model import LinearRegression
 
 # Relative import for the database package
 sys.path.append( path.abspath(path.join(__file__ ,"../../../database")))
@@ -15,13 +16,22 @@ def get_conn():
 conn = get_conn()
 cursor = conn.cursor()
 
-cursor.execute("SELECT num_words,sentence_length,prediction_time from PredictionLog")
+cursor.execute("""SELECT 
+            c.n_cpu, c.ram, c.gpuavailable, p.num_words, p.sentence_length, p.prediction_time 
+            from Configuration c INNER JOIN PredictionLog p 
+            ON c.server_id=p.server_id""")
 
 data = cursor.fetchall()
 data = np.array(data).astype(np.float32)
 
-# TODO: Train linear regression model
+x = data[:, :-1]
+y = data[:, -1]
+print('X shape={}'.format(x.shape))
+print('Y shape={}'.format(y.shape))
+model = LinearRegression()
+model.fit(x, y)
+
+print('Coefficients are={}. Intercept={}('.format(model.coef_, model.intercept_))
 
 cursor.close()
 conn.close()
-plt.show()

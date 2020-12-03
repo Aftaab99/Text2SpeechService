@@ -8,7 +8,7 @@ from mysql_credentials import host, user, password, database
 
 def get_config():
     conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-    q_get_config = "SELECT server_id, n_cpu, ram, gpu_available from Configuration"
+    q_get_config = "SELECT server_id, n_cpu, ram, gpuavailable from Configuration"
     cursor = conn.cursor()
 
     cursor.execute(q_get_config)

@@ -21,10 +21,6 @@ A text-to-speech service implementation with predictive, dynamic load balancing
 
         deactivate
 
-2. Nginx
-
-        sudo apt install nginx
-
 To start the master node server, run
 
     gunicorn --bind 0.0.0.0:5000 master:app
@@ -38,6 +34,5 @@ This repo makes use of [FastSpeech](https://github.com/xcmyz/FastSpeech) for spe
 To test a request make a POST request to `localhost:5000/getspeech` with POST data as a JSON object looking like this
 
     {
-        "text_message" : "This is text to be converted to speech"
+        "text_message" : "This is text to be converted to speech. Text can have multiple sentences."
     }
-The request should get proxied to one of the worker servers and you can view which in the response headers. A sentence of length 7-10 words takes roughly 10 seconds to synthesize on CPU.
