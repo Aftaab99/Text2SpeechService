@@ -2,5 +2,5 @@
 __pycache__/
 environments/masterenv/
 environments/workerenv/
-services/text2speech/FastSpeech/
+services/text2speech/FastSpeech/model_new
 database/mysql_credentials.py

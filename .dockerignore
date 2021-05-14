@@ -1,0 +1,5 @@
+.git/
+.gitignore
+environments/masterenv/
+environments/workerenv/
+.vscode/

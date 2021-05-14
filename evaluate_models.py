@@ -4,14 +4,13 @@ import datetime
 import os.path as path
 import sys
 import numpy as np
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, Ridge, Lasso
 from sklearn.svm import SVR
 from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 
-# Relative import for the database package
 from database.mysql_credentials import host, user, password, database
 
 def get_conn():
@@ -35,12 +34,12 @@ y_train = train[:, -1]
 x_test = test[:, :-1]
 y_test = test[:, -1]
 
-model = LinearRegression()
+model = Lasso(alpha=0.125)
 model.fit(x_train, y_train)
 
 print('MSE score is {}'.format(mean_squared_error(y_test, model.predict(x_test))))
 
-# print('Coefficients are={}. Intercept={}('.format(model.coef_, model.intercept_))
+print('Coefficients are={}. Intercept={}('.format(model.coef_, model.intercept_))
 
 cursor.close()
 conn.close()

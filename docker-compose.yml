@@ -1,0 +1,38 @@
+version: "2.4"
+services:
+  master:
+    network_mode: host
+    build:
+      context: .
+      dockerfile: services/loadbalancing/Dockerfile
+  worker1:
+    network_mode: host
+    build:
+      context: .
+      dockerfile: services/text2speech/Dockerfile
+    environment:
+      - PORT=17000
+    cpu_count: 2
+    mem_limit: 1500m 
+    mem_reservation: 1500m
+  worker2:
+    network_mode: host
+    build:
+      context: .
+      dockerfile: services/text2speech/Dockerfile
+    environment:
+      - PORT=17001
+    cpu_count: 1
+    mem_limit: 1000m 
+    mem_reservation: 1000m
+  worker3:
+    network_mode: host
+    build:
+      context: .
+      dockerfile: services/text2speech/Dockerfile
+    environment:
+      - PORT=17002
+    cpu_count: 1
+    mem_limit: 1000m 
+    mem_reservation: 1000m
+

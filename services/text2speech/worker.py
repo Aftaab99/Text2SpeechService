@@ -1,6 +1,8 @@
 from flask import Flask, request, make_response
 import requests
-from text2speech import get_audio_from_text, load_model
+import os
+
+from services.text2speech.text2speech import get_audio_from_text, load_model
 from io import StringIO, BytesIO
 import mysql.connector
 import time
@@ -9,8 +11,7 @@ import os.path as path
 import sys
 
 # Relative import for the database package
-sys.path.append( path.abspath(path.join(__file__ ,"../../../database")))
-from mysql_credentials import host, user, password, database
+from database.mysql_credentials import host, user, password, database
 
 
 app = Flask(__name__)

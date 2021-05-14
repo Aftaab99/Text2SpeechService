@@ -6,20 +6,20 @@ import os
 import torch
 import torch.nn as nn
 from scipy.io.wavfile import write
-import FastSpeech.hparams as hp
-import FastSpeech.audio.hparams_audio as hpa
-from FastSpeech.audio.tools import _stft
-from FastSpeech.audio.audio_processing import griffin_lim
-import FastSpeech.model as M
-from FastSpeech.eval import synthesis
-from FastSpeech.text import text_to_sequence
+import services.text2speech.FastSpeech.hparams as hp
+import services.text2speech.FastSpeech.audio.hparams_audio as hpa
+from services.text2speech.FastSpeech.audio.tools import _stft
+from services.text2speech.FastSpeech.audio.audio_processing import griffin_lim
+import services.text2speech.FastSpeech.model as M
+from services.text2speech.FastSpeech.eval import synthesis
+from services.text2speech.FastSpeech.text import text_to_sequence
 from io import StringIO, BytesIO
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 def load_model():
     ckpt_num = 135000
-    checkpoint_path = "./FastSpeech/model_new/checkpoint_" + str(ckpt_num) + ".pth.tar"
+    checkpoint_path = "./services/text2speech/FastSpeech/model_new/checkpoint_" + str(ckpt_num) + ".pth.tar"
     model = nn.DataParallel(M.FastSpeech()).to(device)
     model.load_state_dict(torch.load(checkpoint_path, map_location='cpu')['model'])
     model.eval()

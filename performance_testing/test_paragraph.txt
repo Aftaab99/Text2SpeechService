@@ -1,0 +1,25 @@
+It’s the same as with other languages.
+
+There are two main reasons for this.
+
+With one thread 100 percent of processor time goes to running your code.
+
+As more threads happen a thing called a Context Switch occurs. The first thread is stopped from running. All of its context - basically ‘where it was up to’ - is saved ready to pick it up again. A second thread gets its previous context looked up. It is used to set up the thread to pick up where it left off.
+
+That consumes time and resources which aren’t going towards your code.
+
+The more threads you have the bigger a percentage of time and resources is hogged by this. What’s left for your code tends to zero.
+
+The other reason is all about the problem itself. Some problems can be done more efficiently in parallel. If you have 100 onions to peel and dice, 100 chefs with 100 knives will do it in roughly the time for a single onion.
+
+That’s the kind of problem concurrency helps with. Stuff that can be split up into separate tasks that don’t depend on each other.
+
+But how about using those onions?
+
+If the recipe calls for them being browned before you add the spice mix, then you have a sequence to follow. Doing those tasks concurrently won’t work.
+
+In the computing world multi threading is only useful where you can do computing work whilst waiting for something else to complete. You can finish off a calculation whilst you wait for the next batch of data.
+
+As soon as the problem moves away from working whilst waiting - say if it is all calculation, or all waiting for data - then multi threading won’t help.
+
+Multithreading only improves utilisation. It can make throughput faster and get results earlier by using those waiting times. But overall, it’s an illusion. Your calculation keeps getting interrupted by those pesky context switches and it’s total elapsed time will be longer.

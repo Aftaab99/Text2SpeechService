@@ -3,8 +3,7 @@ import sys
 import mysql.connector
 
 # Relative import for the database package
-sys.path.append( path.abspath(path.join(__file__ ,"../../../database")))
-from mysql_credentials import host, user, password, database
+from database.mysql_credentials import host, user, password, database
 
 def get_config():
     conn = mysql.connector.connect(host=host, user=user, password=password, database=database)

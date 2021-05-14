@@ -31,30 +31,23 @@ def getspeech():
     text = request.get_json()['text_message']
     lines = text.split('.')
     lines = [l for l in lines if l]
-    print(lines)
     ids = []
+    i = 0
+    minload_server = PORTS[i]
     for l in lines:
-        minload_server = PORTS[0]
-        min_load = sum(v for k,v in server_load[PORTS[0]].items())
-        for si in PORTS:
-            cur_load = sum(v for k,v in server_load[si].items())
-            if cur_load<min_load:
-                min_load = cur_load
-                minload_server = si
         ids.append(minload_server)
         pt = predict_time_taken(minload_server, l)
         if server_load[minload_server].get(request_id):
             server_load[minload_server][request_id]+=pt
         else:
             server_load[minload_server][request_id]=pt
+        i = (i+1)%len(PORTS)
+        minload_server = PORTS[i]
     loop = asyncio.get_event_loop()
     result_wav = loop.run_until_complete(get_final_response(lines, ids))
     response = make_response(result_wav.getvalue())
     result_wav.close()
 
-    for si in server_load:
-        if request_id in server_load[si]:
-            del server_load[si][request_id]
     response.headers['Content-Type'] = 'audio/wav'
     response.headers['Worker-Process'] = request.host
     response.headers['Content-Disposition'] = 'attachment; filename=speech.wav'
@@ -98,6 +91,6 @@ def predict_time_taken(server_id, sentence):
     ram = float(config[server_id]['ram'])
     hasgpu = int(config[server_id]['gpu_available'])
 
-    return (-0.02902771 * cpu) + (0 * ram) + (0 * hasgpu) \
-           + (-0.351551 * num_words) + (0.23044036 * sentence_len) \
+    return (0 * cpu) + (0 * ram) + (0 * hasgpu) \
+           + (-5.3502524e-01 * num_words) + (4.7990492e-01 * sentence_len) \
            + (-3.0397911071777344)
