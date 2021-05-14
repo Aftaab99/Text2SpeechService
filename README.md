@@ -13,7 +13,7 @@ A text-to-speech service implementation with predictive, dynamic load balancing
 3. Install docker and docker-compose and run the following. This will spawn 3 worker nodes and 1 master node, each node being a Gunicorn server process.
 
         docker-compose build
-        docker-compose run
+        docker-compose up
 
 ### Text2Speech implementation
-This repo makes use of [FastSpeech](https://github.com/xcmyz/FastSpeech) for speech synthesis. Clone my [fork](https://github.com/Aftaab99/FastSpeech) into `services/text2speech/FastSpeech`. Its mostly the same except I removed the GPU code and WaveGlow as audio quality was satisfactory and WaveGlow was slow on CPU.
+This repo makes use of [FastSpeech](https://github.com/xcmyz/FastSpeech) for speech synthesis. Download the FastSpeech model into `services/text2speech/FastSpeech/model_new/` from [FastSpeech](https://github.com/xcmyz/FastSpeech). We have removed the WaveGlow model from FastSpeech due to performance limitations. 
