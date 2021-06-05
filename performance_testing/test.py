@@ -1,6 +1,6 @@
 import requests
 import time
-
+#performance_testing
 with open('test_paragraph.txt', 'r') as f:
   data = f.read()
   t1 = time.time()
