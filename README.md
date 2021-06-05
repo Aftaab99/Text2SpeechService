@@ -16,4 +16,4 @@ A text-to-speech service implementation with predictive, dynamic load balancing
         docker-compose up
 
 ### Text2Speech implementation
-This repo makes use of [FastSpeech](https://github.com/xcmyz/FastSpeech) for speech synthesis. Download the FastSpeech model into `services/text2speech/FastSpeech/model_new/` from [FastSpeech](https://github.com/xcmyz/FastSpeech). We have removed the WaveGlow model from FastSpeech due to performance limitations. 
+This repo makes use of [FastSpeech](https://github.com/xcmyz/FastSpeech) for speech synthesis. Download the FastSpeech model into `services/text2speech/FastSpeech/model_new/` from [FastSpeech](https://github.com/xcmyz/FastSpeech). We have removed the WaveGlow model from FastSpeech due to performance limitations.
